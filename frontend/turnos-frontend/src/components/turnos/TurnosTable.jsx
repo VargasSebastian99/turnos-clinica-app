@@ -1,13 +1,17 @@
 import { EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { hasPermission } from "../../utils/permissions";
+import { useAuth } from "../../hooks/useAuth";
 
 
-export default function TurnosTable({ turnos }) {
-
+export default function TurnosTable({ turnos = [] }) {
+  const {user, loading} = useAuth();
   const navigate = useNavigate();
+  
   const handleEliminar = (id) => {
     alert("Eliminar Turno " + id);
   }
+  console.log("TURNOS EN COMPONENTE:", turnos);
   return (
     <div className="mt-6 bg-white shadow rounded-lg p-4">
       <h2 className="text-xl font-semibold mb-4">Listado de turnos</h2>
@@ -33,28 +37,34 @@ export default function TurnosTable({ turnos }) {
               </td>
             </tr>
           ) : (
-            turnos.map((t, i) => (
-              <tr key={i}>
+            turnos.map((t) => (
+              <tr key={t.id}>
                 <td className="p-2 border text-center justify-center py-2">
                     <div className="flex gap-2 justify-center">
+                      {hasPermission(user, "ver_turnos") && (
                     <button onClick={() => navigate(`/turnos/${t.id}`)}>
 
 
                         <EyeIcon className="h-5 w-5 text-blue-600 hover:text-blue-800" />
                     </button>
+                      )}
+                      {hasPermission(user, "editar_turno") && (
                     <button onClick={()=> navigate(`/turnos/${t.id}/editar`)}>
                         <PencilSquareIcon className="h-5 w-5 text-green-600 hover:text-green-800" />
                     </button>
+                      )}
+                      {hasPermission(user, "eliminar_turno") && (
                     <button onClick={()=> handleEliminar(t.id)}>
                         <TrashIcon className="h-5 w-5 text-red-600 hover:text-red-800" />
                     </button>
+                      )}
                     </div   >
                 </td>
                 <td className="p-2 border">{t.fecha || "-"}</td>
                 <td className="p-2 border">{t.hora || "-"}</td>
-                <td className="p-2 border">{t.profesional?.nombre || "-"}</td>
-                <td className="p-2 border">{t.cliente?.nombre || "-"} {t.cliente?.apellido || "-"}</td>
-                <td className="p-2 border">{t.servicio?.nombre || "-"}</td>
+                <td className="p-2 border">{t.profesionalNombre || "-"}</td>
+                <td className="p-2 border">{t.clienteNombre || "-"}</td>
+                <td className="p-2 border">{t.servicioNombre || "-"}</td>
                 <td className="p-2 border">{t.estado || "-"}</td>
               </tr>
             ))

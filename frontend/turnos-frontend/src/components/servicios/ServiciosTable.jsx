@@ -1,7 +1,11 @@
 import { EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { hasPermission } from "../../utils/permissions";
+import { useAuth } from "../../hooks/useAuth";
+
 export default function ServiciosTable({ servicios }) {
   const navigate = useNavigate();
+  const {user, loading} = useAuth();
   const handleEliminar = (id) => {
     alert("Eliminar Servicio " + id);
   }
@@ -32,21 +36,29 @@ export default function ServiciosTable({ servicios }) {
               <tr key={i}>
                 <td className="p-2 border text-center justify-center py-2">
                     <div className="flex gap-2 justify-center">
+                      {hasPermission(user, "ver_servicios") && (
                     <button onClick={()=> navigate(`/servicios/${s.id}`)}>
                         <EyeIcon className="h-5 w-5 text-blue-600 hover:text-blue-800" />
                     </button>
+                      )}
+                      {hasPermission(user, "editar_servicio") && (
+
                     <button onClick={()=> navigate(`/servicios/${s.id}/editar`)}>
                         <PencilSquareIcon className="h-5 w-5 text-green-600 hover:text-green-800" />
                     </button>
+                    )}
+                    {hasPermission(user, "eliminar_servicio") && (
+
                     <button onClick={()=> handleEliminar(s.id)}>
                         <TrashIcon className="h-5 w-5 text-red-600 hover:text-red-800" />
                     </button>
+                    )}
                     </div>
                 </td>
                 <td className="p-2 border">{s.nombre}</td>
                 <td className="p-2 border">{s.duracionMinutos}</td>
                 <td className="p-2 border">${s.precio}</td>
-                <td className="p-2 border">{s.especialidad.nombre}</td>
+                <td className="p-2 border">{s.especialidadNombre}</td>
               </tr>
             ))
           )}

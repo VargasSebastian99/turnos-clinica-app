@@ -1,7 +1,7 @@
-package com.cursocopilot.turnos_app.service;
+package com.turnos_app.service;
 
-import com.cursocopilot.turnos_app.model.Cliente;
-import com.cursocopilot.turnos_app.repository.ClienteRepository;
+import com.turnos_app.model.Cliente;
+import com.turnos_app.repository.ClienteRepository;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 

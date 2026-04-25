@@ -1,15 +1,15 @@
-package com.cursocopilot.turnos_app.controller;
+package com.turnos_app.controller;
 
-import com.cursocopilot.turnos_app.model.Servicio;
-import com.cursocopilot.turnos_app.service.ServicioService;
+import com.turnos_app.dto.ServicioResponseDTO;
+import com.turnos_app.model.Servicio;
+import com.turnos_app.service.ServicioService;
 import jakarta.validation.Valid;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import com.turnos_app.security.annotations.RequirePermiso;
 @RestController
 @RequestMapping("/servicios")
 public class ServicioController {
@@ -17,10 +17,12 @@ public class ServicioController {
     public ServicioController(ServicioService service){
         this.service = service;
     }
+    @RequirePermiso("ver_servicios")
     @GetMapping
-    public ResponseEntity<List<Servicio>> obtenerTodos(){
+    public ResponseEntity<?> obtenerTodos(){
         return ResponseEntity.ok(service.obtenerTodos());
     }
+    @RequirePermiso("ver_servicios")
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id){
         Servicio servicio = service.obtenerPorId(id);
@@ -28,13 +30,15 @@ public class ServicioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Servicio no encontrado");
         }
-        return ResponseEntity.ok(servicio);
+        return ResponseEntity.ok(service.mapToDTO(servicio));
     }
+    @RequirePermiso("crear_servicio")
     @PostMapping
     public ResponseEntity<?> crear(@Valid @RequestBody Servicio servicio){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(service.crear(servicio));
     }
+    @RequirePermiso("editar_servicio")
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody Servicio servicio){
         Servicio actualizado = service.actualizar(id, servicio);
@@ -44,6 +48,7 @@ public class ServicioController {
         }
         return ResponseEntity.ok(actualizado);
     }
+    @RequirePermiso("eliminar_servicio")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id){
         if(!service.eliminar(id)){

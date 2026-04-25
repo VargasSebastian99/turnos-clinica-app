@@ -1,7 +1,11 @@
 import { EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom"; 
+import { hasPermission } from "../../utils/permissions";
+import { useAuth } from "../../hooks/useAuth";
+
 export default function ProfesionalesTable({ profesionales }) {
   const navigate = useNavigate();
+  const {user, loading} = useAuth();
   const handleEliminar = (id) => {
     alert("Eliminar Profesional " + id);
   }
@@ -34,19 +38,25 @@ export default function ProfesionalesTable({ profesionales }) {
               <tr key={i}>
                   <td className="p-2 border text-center justify-center py-2">
                       <div className="flex gap-2 justify-center">
+                        {hasPermission(user, "ver_profesionales") && (
                       <button onClick={()=> navigate(`/profesionales/${p.id}`)}>
                           <EyeIcon className="h-5 w-5 text-blue-600 hover:text-blue-800" />
                       </button>
+                        )}
+                        {hasPermission(user, "editar_profesional") && (
                       <button onClick={()=> navigate(`/profesionales/${p.id}/editar`)}>
                           <PencilSquareIcon className="h-5 w-5 text-green-600 hover:text-green-800" />
                       </button>
+                        )}
+                        {hasPermission(user, "eliminar_profesional") && (
                       <button onClick={()=> handleEliminar(p.id)}>
                           <TrashIcon className="h-5 w-5 text-red-600 hover:text-red-800" />
                       </button>
+                        )}
                       </div>
                   </td>
                 <td className="p-2 border">{p.nombre}</td>
-                <td className="p-2 border">{p.especialidad?.nombre}</td>
+                <td className="p-2 border">{p.especialidadNombre}</td>
                 <td className="p-2 border">
                   {p.horaInicioManiana} - {p.horaFinManiana}
                 </td>

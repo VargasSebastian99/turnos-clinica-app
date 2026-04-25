@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LoginPage from "../pages/auth/LoginPage";
+import ProtectedRoute from "../components/ProtectedRoute";
 import MainLayout from "../components/layout/MainLayout";
 import HomePage from "../pages/home/HomePage";
 import TurnosPage from "../pages/turnos/TurnosPage";
@@ -32,27 +34,28 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/turnos" element={<TurnosPage />} />
-          <Route path="/turnos/:id" element={<TurnoView />}/>
-          <Route path="/turnos/:id/editar" element={<TurnoEdit />} />
-          <Route path="/turnos/crear" element={<TurnoCreate />} />
-          <Route path="/especialidades" element={<EspecialidadesPage />} />
-          <Route path="/especialidades/:id" element={<EspecialidadView />} />
-          <Route path="/especialidades/:id/editar" element={<EspecialidadEdit />} />
-          <Route path="/especialidades/crear" element={<EspecialidadCreate />} />
-          <Route path="/servicios" element={<ServiciosPage />} />
-          <Route path="/servicios/:id" element={<ServicioView />} />
-          <Route path="/servicios/:id/editar" element={<ServicioEdit />} />
-          <Route path="/servicios/crear" element={<ServicioCreate />} />
-          <Route path="/profesionales" element={<ProfesionalesPage especialidades={especialidadesMock} />} />
-          <Route path="/profesionales/:id" element={<ProfesionalView />} />
-          <Route path="/profesionales/:id/editar" element={<ProfesionalEdit especialidades={especialidadesMock} />} />
-          <Route path="/profesionales/crear" element={<ProfesionalCreate especialidades={especialidadesMock} />} />
-          <Route path="/clientes" element={<ClientesPage />} />
-          <Route path="/clientes/:id" element={<ClienteView />} />
-          <Route path="/clientes/:id/editar" element={<ClienteEdit />} />
-          <Route path="/clientes/crear" element={<ClienteCreate />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+          <Route path="/turnos" element={<ProtectedRoute><TurnosPage /></ProtectedRoute>} />
+          <Route path="/turnos/:id" element={<ProtectedRoute><TurnoView /></ProtectedRoute>}/>
+          <Route path="/turnos/:id/editar" element={<ProtectedRoute><TurnoEdit /></ProtectedRoute>} />
+          <Route path="/turnos/crear" element={<ProtectedRoute><TurnoCreate /></ProtectedRoute>} />
+          <Route path="/especialidades" element={<ProtectedRoute><EspecialidadesPage /></ProtectedRoute>} />
+          <Route path="/especialidades/:id" element={<ProtectedRoute><EspecialidadView /></ProtectedRoute>} />
+          <Route path="/especialidades/:id/editar" element={<ProtectedRoute><EspecialidadEdit /></ProtectedRoute>} />
+          <Route path="/especialidades/crear" element={<ProtectedRoute><EspecialidadCreate /></ProtectedRoute>} />
+          <Route path="/servicios" element={<ProtectedRoute><ServiciosPage /></ProtectedRoute>} />
+          <Route path="/servicios/:id" element={<ProtectedRoute><ServicioView /></ProtectedRoute>} />
+          <Route path="/servicios/:id/editar" element={<ProtectedRoute><ServicioEdit /></ProtectedRoute>} />
+          <Route path="/servicios/crear" element={<ProtectedRoute><ServicioCreate /></ProtectedRoute>} />
+          <Route path="/profesionales" element={<ProtectedRoute><ProfesionalesPage especialidades={especialidadesMock} /></ProtectedRoute>} />
+          <Route path="/profesionales/:id" element={<ProtectedRoute><ProfesionalView /></ProtectedRoute>} />
+          <Route path="/profesionales/:id/editar" element={<ProtectedRoute><ProfesionalEdit especialidades={especialidadesMock} /></ProtectedRoute>} />
+          <Route path="/profesionales/crear" element={<ProtectedRoute><ProfesionalCreate especialidades={especialidadesMock} /></ProtectedRoute>} />
+          <Route path="/clientes" element={<ProtectedRoute><ClientesPage /></ProtectedRoute>} />
+          <Route path="/clientes/:id" element={<ProtectedRoute><ClienteView /></ProtectedRoute>} />
+          <Route path="/clientes/:id/editar" element={<ProtectedRoute><ClienteEdit /></ProtectedRoute>} />
+          <Route path="/clientes/crear" element={<ProtectedRoute><ClienteCreate /></ProtectedRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,4 +1,4 @@
-package com.cursocopilot.turnos_app.model;
+package com.turnos_app.model;
 
 public enum EstadoTurno {
     PENDIENTE,

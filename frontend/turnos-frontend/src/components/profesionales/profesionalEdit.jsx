@@ -2,8 +2,8 @@ import {  useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ProfesionalForm from "./ProfesionalForm";
 import Modal from "../common/Modal";
-import { editarProfesional } from "../../api/profesionalesApi";
-
+import { getProfesionalById, editarProfesional } from "../../api/profesionalesApi";
+import { getEspecialidades } from "../../api/especialidadesApi";
 export default function ProfesionalEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -13,13 +13,10 @@ export default function ProfesionalEdit() {
   const [formData, setFormData] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:8080/profesionales/${id}`)
-      .then(response => response.json())
-      .then(setProfesional);
-    fetch("http://localhost:8080/especialidades")
-        .then(response => response.json())
-        .then(setEspecialidades);
+    getProfesionalById(id).then(setProfesional);
+    getEspecialidades().then(setEspecialidades);
     }, [id]);
+    
 
     if (!profesional || especialidades.length === 0) return <div>Cargando...</div>;
 

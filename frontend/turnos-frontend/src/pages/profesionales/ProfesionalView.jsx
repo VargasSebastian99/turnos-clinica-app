@@ -1,18 +1,19 @@
 import {use, useEffect, useState} from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { getProfesionalById } from "../../api/profesionalesApi";
 import EntityViewLayout from "../../layouts/EntityViewLayout";
-
+import { useAuth } from "../../hooks/useAuth";
 export default function ProfesionalView() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [tab, setTab] = useState("info");
     const [profesional, setProfesional] = useState(null);
+    const { user, loading } = useAuth();
 
     useEffect(() => {
-        fetch(`http://localhost:8080/profesionales/${id}`)
-            .then(response => response.json())
-            .then(setProfesional);
-    }, [id]);
+        if (loading) return;
+        getProfesionalById(id).then(setProfesional);
+    }, [id, loading]);
 
     if (!profesional) return <div>Cargando...</div>;
     return (
@@ -32,7 +33,7 @@ export default function ProfesionalView() {
                         <h2 className="text-lg font-semibold">Datos del Profesional</h2>
                         <div className="border-b my-3"></div>
                         <p><strong>Nombre:</strong> {profesional.nombre}</p>
-                        <p><strong>Especialidad:</strong> {profesional.especialidad.nombre}</p>
+                        <p><strong>Especialidad:</strong> {profesional.especialidadNombre}</p>
                         <p><strong>Estado:</strong> {profesional.estado ? "Activo" : "Inactivo"}</p>
                     </div>
                     <div className="bg-white shadow-md rounded-lg p-4">

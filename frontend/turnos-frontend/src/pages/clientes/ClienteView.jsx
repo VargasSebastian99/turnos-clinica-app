@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { getClienteById } from "../../api/clientesApi";
 import EntityViewLayout from "../../layouts/EntityViewLayout";  
 
 export default function ClienteView() {
@@ -7,11 +9,10 @@ export default function ClienteView() {
     const navigate = useNavigate();
     const [tab, setTab] = useState("info");
     const [cliente, setCliente] = useState(null);
-
+    const { user, loading } = useAuth();
     useEffect(() => {
-        fetch(`http://localhost:8080/clientes/${id}`)
-            .then(response => response.json())
-            .then(setCliente);
+        if (loading) return;
+        getClienteById(id).then(setCliente);
     }, [id]);
 
     if (!cliente) return <div>Cargando...</div>;    

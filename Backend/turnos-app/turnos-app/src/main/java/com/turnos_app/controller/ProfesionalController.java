@@ -1,7 +1,7 @@
-package com.cursocopilot.turnos_app.controller;
+package com.turnos_app.controller;
 
-import com.cursocopilot.turnos_app.model.Profesional;
-import com.cursocopilot.turnos_app.service.ProfesionalService;
+import com.turnos_app.model.Profesional;
+import com.turnos_app.service.ProfesionalService;
 import jakarta.validation.Valid;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import com.turnos_app.security.annotations.RequirePermiso;
 @RestController
 @RequestMapping("/profesionales")
 public class ProfesionalController {
@@ -18,10 +18,13 @@ public class ProfesionalController {
     public ProfesionalController(ProfesionalService service){
         this.service = service;
     }
+    @RequirePermiso("ver_profesionales")
     @GetMapping
-    public ResponseEntity<List<Profesional>> obtenerTodos(){
+    public ResponseEntity<?> obtenerTodos(){
+
         return ResponseEntity.ok(service.obtenerTodos());
     }
+    @RequirePermiso("ver_profesionales")
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id){
         Profesional profesional = service.obtenerPorId(id);
@@ -29,13 +32,15 @@ public class ProfesionalController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Profesional no encontrado");
         }
-        return ResponseEntity.ok(profesional);
+        return ResponseEntity.ok(service.mapToDTO(profesional));
     }
+    @RequirePermiso("crear_profesional")
     @PostMapping
     public ResponseEntity<?> crear(@Valid @RequestBody Profesional profesional){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(service.crear(profesional));
     }
+    @RequirePermiso("editar_profesional")
     @PutMapping("{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody Profesional profesional){
         Profesional actualizado = service.actualizar(id, profesional);
@@ -45,6 +50,7 @@ public class ProfesionalController {
         }
         return ResponseEntity.ok(actualizado);
     }
+    @RequirePermiso("eliminar_profesional")
     @DeleteMapping("{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id){
         if(!service.eliminar(id)){

@@ -1,6 +1,6 @@
-package com.cursocopilot.turnos_app.repository;
+package com.turnos_app.repository;
 
-import com.cursocopilot.turnos_app.model.Especialidad;
+import com.turnos_app.model.Especialidad;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -4,7 +4,7 @@ export default function ServicioForm({ initialValues, onSubmit, especialidades }
   const [nombre, setNombre] = useState(initialValues.nombre || "");
   const [duracionMinutos, setDuracion] = useState(initialValues.duracionMinutos || "");
   const [precio, setPrecio] = useState(initialValues.precio || "");
-  const [especialidadId, setEspecialidadId] = useState(initialValues.especialidad?.id || "");
+  const [especialidadId, setEspecialidadId] = useState(initialValues.especialidadId || "");
 
   // Cargar valores iniciales
   useEffect(() => {
@@ -12,13 +12,16 @@ export default function ServicioForm({ initialValues, onSubmit, especialidades }
       setNombre(initialValues.nombre ?? "");
       setDuracion(initialValues.duracionMinutos ?? "");
       setPrecio(initialValues.precio ?? "");
-      setEspecialidadId(initialValues.especialidad?.id ?? "");
+      setEspecialidadId(initialValues.especialidadId?.toString() ?? "");
     }
   }, [initialValues]);
 
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const especialidad = especialidades.find(
+      (e) => e.id.toString() === especialidadId
+    );
 
     onSubmit({
       nombre,
@@ -27,7 +30,7 @@ export default function ServicioForm({ initialValues, onSubmit, especialidades }
       especialidad: { id: Number(especialidadId) }
     });
   };
-
+  if (!especialidades) return <div> Cargando especialidades ...</div>
   return (
     <form id="servicio-form" onSubmit={handleSubmit} className="space-y-4">
       <h2 className="text-xl font-semibold">Nuevo servicio</h2>

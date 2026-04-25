@@ -1,4 +1,4 @@
-package com.cursocopilot.turnos_app.model;
+package com.turnos_app.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,15 +1,16 @@
-#Backend
+# Backend
 /backend/target/
 *.log
 
-#Frontend
-/frontend/node_modules
+# Frontend
+/frontend/node_modules/
 frontend/build/
 
-#IDE
+# IDE
 .idea/
 .vscode/
 
-#Config sensible
-**/application.propierties
+# Config sensible
+**/application.properties
 **/application.yml
+**/src/test/

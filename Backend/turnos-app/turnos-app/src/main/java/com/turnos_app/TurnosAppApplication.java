@@ -1,4 +1,4 @@
-package com.cursocopilot.turnos_app;
+package com.turnos_app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

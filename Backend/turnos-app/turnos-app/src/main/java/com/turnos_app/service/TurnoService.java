@@ -1,11 +1,13 @@
-package com.cursocopilot.turnos_app.service;
+package com.turnos_app.service;
 
-import com.cursocopilot.turnos_app.model.*;
-import com.cursocopilot.turnos_app.repository.ClienteRepository;
-import com.cursocopilot.turnos_app.repository.ProfesionalRepository;
-import com.cursocopilot.turnos_app.repository.ServicioRepository;
-import com.cursocopilot.turnos_app.repository.TurnoRepository;
-import com.cursocopilot.turnos_app.turnos.specifications.TurnoSpecification;
+import com.turnos_app.dto.TurnoCreateDTO;
+import com.turnos_app.dto.TurnoResponseDTO;
+import com.turnos_app.model.*;
+import com.turnos_app.repository.ClienteRepository;
+import com.turnos_app.repository.ProfesionalRepository;
+import com.turnos_app.repository.ServicioRepository;
+import com.turnos_app.repository.TurnoRepository;
+import com.turnos_app.turnos.specifications.TurnoSpecification;
 import io.micrometer.observation.ObservationTextPublisher;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
@@ -45,41 +47,66 @@ public class TurnoService {
         this.servicioRepository = servicioRepository;
     }
 
-    public List<Turno> obtenerTodos(){
-        return repository.findAll();
+    public List<TurnoResponseDTO> obtenerTodos(){
+        return mapToDTOList(repository.findAllConRelaciones());
     }
     public Turno obtenerPorId(Long id){
         return repository.findById(id).orElse(null);
     }
-    public Turno crear(Turno turno){
-        // validar existencia de entidades
-        turno.setCliente(
-                clienteRepository.findById(turno.getCliente().getId()).orElse(null)
-        );
-        turno.setProfesional(
-                profesionalRepository.findById(turno.getProfesional().getId()).orElse(null)
-        );
-        turno.setServicio(
-                servicioRepository.findById(turno.getServicio().getId()).orElse(null)
-        );
-        // validar solapamiento
+    public TurnoResponseDTO crear(TurnoCreateDTO dto){
+        Cliente cliente = clienteRepository.findById(dto.clienteId())
+                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
+
+        Profesional profesional = profesionalRepository.findById(dto.profesionalId())
+                .orElseThrow(() -> new IllegalArgumentException("Profesional no encontrado"));
+
+        Servicio servicio = servicioRepository.findById(dto.servicioId())
+                .orElseThrow(() -> new IllegalArgumentException("Servicio no encontrado"));
+
+        Turno turno = new Turno();
+        turno.setFecha(dto.fecha());
+        turno.setHora(dto.hora());
+        turno.setCliente(cliente);
+        turno.setProfesional(profesional);
+        turno.setServicio(servicio);
+        turno.setEstado(EstadoTurno.PENDIENTE);
+
+        // Validaciones
         validarSolapamiento(turno);
-        // validar turno en el pasado
         validarTurnoEnElPasado(turno);
-        //validar horario del profesional
-        validarHorarioLaboral(turno);
-        //validat solapamientos horarios cliente
         validarTurnoCliente(turno);
-        //validar día no laborable
         validarHorarioLaboral(turno);
-        //validar especialidades
-        validarServicioEspecialidad(turno);
-        validarEstadoProfesional(turno);
         validarClienteActivo(turno);
         validarServicioActivo(turno);
         validarEspecialidadActiva(turno);
-        turno.setEstado(EstadoTurno.PENDIENTE);
-        return repository.save(turno);
+
+        Turno guardado = repository.save(turno);
+
+        return mapToDTO(guardado);
+    }
+
+    //devolver un dto para visualizar turnos
+    public TurnoResponseDTO mapToDTO(Turno t){
+        return new TurnoResponseDTO(
+                t.getId(),
+                t.getFecha(),
+                t.getHora(),
+                t.getEstado(),
+                t.getCliente().getId(),
+                t.getCliente().getNombre(),
+                t.getCliente().getEmail(),
+                t.getCliente().getTelefono(),
+                t.getProfesional().getId(),
+                t.getProfesional().getNombre(),
+                t.getServicio().getId(),
+                t.getServicio().getNombre(),
+                t.getServicio().getDuracionMinutos()
+        );
+    }
+    public List<TurnoResponseDTO> mapToDTOList(List<Turno> turnos){
+        return turnos.stream()
+                .map(this::mapToDTO)
+                .toList();
     }
     public Turno actualizar(Long id, Turno datos){
         Turno existente = obtenerPorId(id);

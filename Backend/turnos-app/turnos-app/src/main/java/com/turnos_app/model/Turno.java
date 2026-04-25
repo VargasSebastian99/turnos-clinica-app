@@ -1,9 +1,10 @@
-package com.cursocopilot.turnos_app.model;
+package com.turnos_app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.Fetch;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,7 +16,8 @@ import java.time.LocalTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "turnos")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Turno {
@@ -24,16 +26,19 @@ public class Turno {
     private Long id;
     private LocalDate fecha;
     private LocalTime hora;
-    @ManyToOne
     @JoinColumn(name = "cliente_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private Cliente cliente;
 
     @ManyToOne
     @JoinColumn(name = "servicio_id")
+    @JsonIgnore
     private Servicio servicio;
 
     @ManyToOne
     @JoinColumn(name = "profesional_id")
+    @JsonIgnore
     private Profesional profesional;
     @Enumerated(EnumType.STRING)
     private EstadoTurno estado; //pendiente, confirmado, cancelado
@@ -44,5 +49,7 @@ public class Turno {
     private LocalDateTime fechaAlta;
     @LastModifiedDate
     private LocalDateTime fechaModificacion;
+
+
 
 }

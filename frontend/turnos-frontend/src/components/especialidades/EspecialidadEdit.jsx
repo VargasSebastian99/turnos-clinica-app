@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import EspecialidadForm from "./EspecialidadForm";
 import Modal from "../common/Modal";
+import { editarEspecialidad, getEspecialidadById } from "../../api/especialidadesApi";
+
 
 export default function EspecialidadEdit() {
     const { id } = useParams();
@@ -11,20 +13,14 @@ export default function EspecialidadEdit() {
     const [formData, setFormData] = useState(null);
 
     useEffect(() => {
-        fetch(`http://localhost:8080/especialidades/${id}`)
-            .then(response => response.json())
-            .then(setEspecialidad);
+        getEspecialidadById(id).then(setEspecialidad);
     }, [id]);
     function handleSubmit(data) {
         setFormData(data);
         setOpenModal(true);
     }
     function confirmUpdate() {
-        fetch(`http://localhost:8080/especialidades/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData)
-        })
+        editarEspecialidad(id, formData)
         .then(() => navigate(`/especialidades/${id}`));
     }
     if (!especialidad) return <div>Cargando...</div>;

@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import EntityViewLayout from "../../layouts/EntityViewLayout";
-
+import { useAuth } from "../../hooks/useAuth";
+import { hasPermission } from "../../utils/permissions";
+import { getServicioById } from "../../api/serviciosApi";
 export default function ServicioView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("info");
   const [servicio, setServicio] = useState(null);
-
+  const { user, loading } = useAuth();  
   useEffect(() => {
-    fetch(`http://localhost:8080/servicios/${id}`)
-      .then(response => response.json())
-      .then(setServicio);
-  }, [id]);
+    if (loading) return;
+    getServicioById(id).then(setServicio); 
+  }, [id, loading]);
   
   if (!servicio) return <div>Cargando...</div>;
 

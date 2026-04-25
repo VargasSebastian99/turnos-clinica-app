@@ -1,7 +1,11 @@
 import { EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { hasPermission } from "../../utils/permissions";
+import { useAuth } from "../../hooks/useAuth";
+
 export default function ClientesTable({ clientes }) {
   const navigate = useNavigate();
+  const {user, loading} = useAuth();
   const handleEliminar = (id) => {
     alert("Eliminar Cliente " + id);
   }
@@ -32,15 +36,21 @@ export default function ClientesTable({ clientes }) {
               <tr key={i}>
                 <td className="p-2 border text-center justify-center py-2">
                       <div className="flex gap-2 justify-center">
-                      <button onClick={()=> navigate(`/clientes/${c.id}`)}>
-                          <EyeIcon className="h-5 w-5 text-blue-600 hover:text-blue-800" />
-                      </button>
-                      <button onClick={()=> navigate(`/clientes/${c.id}/editar`)}>
-                          <PencilSquareIcon className="h-5 w-5 text-green-600 hover:text-green-800" />
-                      </button>
-                      <button onClick={()=> handleEliminar(c.id)}>
-                          <TrashIcon className="h-5 w-5 text-red-600 hover:text-red-800" />
-                      </button>
+                        {hasPermission(user, "ver_clientes") && (
+                          <button onClick={()=> navigate(`/clientes/${c.id}`)}>
+                            <EyeIcon className="h-5 w-5 text-blue-600 hover:text-blue-800" />
+                          </button>
+                        )}
+                        {hasPermission(user, "editar_cliente") && (
+                          <button onClick={()=> navigate(`/clientes/${c.id}/editar`)}>
+                            <PencilSquareIcon className="h-5 w-5 text-green-600 hover:text-green-800" />
+                          </button>
+                        )}
+                        {hasPermission(user, "eliminar_cliente") && (
+                          <button onClick={()=> handleEliminar(c.id)}>
+                            <TrashIcon className="h-5 w-5 text-red-600 hover:text-red-800" />
+                          </button>
+                        )}
                       </div>
                 </td>
                 <td className="p-2 border">{c.nombre}</td>

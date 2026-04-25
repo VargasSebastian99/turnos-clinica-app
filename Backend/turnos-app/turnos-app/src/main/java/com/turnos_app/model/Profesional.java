@@ -1,11 +1,9 @@
-package com.cursocopilot.turnos_app.model;
+package com.turnos_app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Cascade;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,7 +18,8 @@ import java.util.List;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "profesionales")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Profesional {
@@ -31,8 +30,9 @@ public class Profesional {
     private String nombre;
     @Enumerated(EnumType.STRING)
     private EstadoProfesional estado = EstadoProfesional.ACTIVO;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "especialidad_id")
+    @JsonIgnore
     private Especialidad especialidad;
     private LocalTime horaInicioManiana;
     private LocalTime horaFinManiana;
@@ -45,7 +45,7 @@ public class Profesional {
     private LocalDateTime fechaAlta;
     @LastModifiedDate
     private LocalDateTime fechaModificacion;
-    @OneToMany(mappedBy = "profesional", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profesional", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Turno> turnos = new ArrayList<>();
 

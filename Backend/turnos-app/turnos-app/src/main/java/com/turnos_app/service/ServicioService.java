@@ -1,7 +1,10 @@
-package com.cursocopilot.turnos_app.service;
+package com.turnos_app.service;
 
-import com.cursocopilot.turnos_app.model.Servicio;
-import com.cursocopilot.turnos_app.repository.ServicioRepository;
+import com.turnos_app.dto.ServicioResponseDTO;
+import com.turnos_app.model.Especialidad;
+import com.turnos_app.model.Servicio;
+import com.turnos_app.repository.ServicioRepository;
+import com.turnos_app.repository.EspecialidadRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -11,12 +14,33 @@ import java.util.List;
 @Service
 public class ServicioService {
     private final ServicioRepository repository;
+    private final EspecialidadRepository especialidadRepository;
 
-    public ServicioService(ServicioRepository repository){
+    public ServicioService(ServicioRepository repository, EspecialidadRepository especialidadRepository){
+
         this.repository = repository;
+        this.especialidadRepository = especialidadRepository;
     }
-    public List<Servicio> obtenerTodos(){
-        return repository.findAll();
+    public ServicioResponseDTO mapToDTO(Servicio s){
+        return new ServicioResponseDTO(
+            s.getId(),
+            s.getNombre(),
+            s.getDuracionMinutos(),
+            s.getFechaBaja(),
+            s.getEspecialidad().getId(),
+            s.getEspecialidad().getNombre(),
+            s.getFechaAlta(),
+            s.getFechaModifiacion()
+        );
+    }
+    public List<ServicioResponseDTO> mapToDTOList(List<Servicio> servicios){
+        return servicios.stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+    public List<ServicioResponseDTO> obtenerTodos(){
+
+        return mapToDTOList(repository.findAll());
     }
     public Servicio obtenerPorId(Long id){
         return repository.findById(id).orElse(null);
@@ -29,6 +53,11 @@ public class ServicioService {
         if(existente == null) return null;
         existente.setNombre(datos.getNombre());
         existente.setDuracionMinutos(datos.getDuracionMinutos());
+        if(datos.getEspecialidad() != null) {
+            Long espId = datos.getEspecialidad().getId();
+            Especialidad esp = especialidadRepository.findById(espId).orElse(null);
+            existente.setEspecialidad(esp);
+        }
         return repository.save(existente);
     }
     public boolean eliminar(Long id){

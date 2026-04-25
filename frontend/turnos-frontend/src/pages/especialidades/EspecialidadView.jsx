@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { getEspecialidadById } from "../../api/especialidadesApi";
+import { useAuth } from "../../hooks/useAuth";
+import { hasPermission } from "../../utils/permissions";
 import EntityViewLayout from "../../layouts/EntityViewLayout";
 
 export default function EspecialidadView() {
@@ -7,12 +10,12 @@ export default function EspecialidadView() {
     const navigate = useNavigate();
     const [tab, setTab] = useState("info");
     const [especialidad, setEspecialidad] = useState(null);
+    const { user, loading } = useAuth();
 
     useEffect(() => {
-        fetch(`http://localhost:8080/especialidades/${id}`)
-            .then(response => response.json())
-            .then(setEspecialidad);
-    }, [id]);
+        if (loading) return;
+        getEspecialidadById(id).then(setEspecialidad);  
+    }, [id, loading]);
 
     if (!especialidad) return <div>Cargando...</div>;
     return (

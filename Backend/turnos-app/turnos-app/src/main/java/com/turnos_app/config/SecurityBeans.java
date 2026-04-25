@@ -1,4 +1,4 @@
-package com.cursocopilot.turnos_app.config;
+package com.turnos_app.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

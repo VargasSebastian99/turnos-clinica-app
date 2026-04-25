@@ -5,16 +5,20 @@ import { useNavigate } from "react-router-dom";
 import ServiciosTable from "../../components/servicios/ServiciosTable";
 import ServicioForm from "../../components/servicios/ServicioForm";
 import Modal from "../../components/common/Modal";
+import { hasPermission } from "../../utils/permissions";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function ServiciosPage() {
   const [open, setOpen] = useState(false);
   const [especialidades, setEspecialidades] = useState([]);
   const [servicios, setServicios] = useState([]);
+  const {user, loading} = useAuth();
   const navigate = useNavigate();
     useEffect(() => {
+      if (loading) return; // Esperar a que se cargue el usuario
         getServicios().then(setServicios);
         getEspecialidades().then(setEspecialidades);
-        },[]);
+        },[loading]);
   const agregarServicio = async(data) => {
       const nuevo = await crearServicio(data);
     setServicios([...servicios, nuevo]);
@@ -25,13 +29,14 @@ export default function ServiciosPage() {
     <div>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Servicios</h1>
-
+        {hasPermission(user, "crear_servicio") && (
         <button
           onClick={() => navigate("/servicios/crear")}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Nuevo servicio
         </button>
+        )}
       </div>
 
       <ServiciosTable servicios={servicios} />

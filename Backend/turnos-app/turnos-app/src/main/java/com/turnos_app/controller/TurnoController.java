@@ -1,9 +1,11 @@
-package com.cursocopilot.turnos_app.controller;
+package com.turnos_app.controller;
 
-import com.cursocopilot.turnos_app.Security.annotations.RequirePermiso;
-import com.cursocopilot.turnos_app.model.EstadoTurno;
-import com.cursocopilot.turnos_app.model.Turno;
-import com.cursocopilot.turnos_app.service.TurnoService;
+import com.turnos_app.dto.TurnoCreateDTO;
+import com.turnos_app.dto.TurnoResponseDTO;
+import com.turnos_app.security.annotations.RequirePermiso;
+import com.turnos_app.model.EstadoTurno;
+import com.turnos_app.model.Turno;
+import com.turnos_app.service.TurnoService;
 import jakarta.validation.Valid;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.data.domain.Page;
@@ -16,17 +18,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-
 @RestController
 @RequestMapping("/turnos")
 public class TurnoController {
+
     private final TurnoService service;
 
     public TurnoController(TurnoService service){
         this.service = service;
     }
 
-
+    // ============================
+    // GET POR ID (DTO)
+    // ============================
+    @RequirePermiso("ver_turnos")
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id){
         Turno turno = service.obtenerPorId(id);
@@ -34,19 +39,37 @@ public class TurnoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Turno no encontrado");
         }
-        return ResponseEntity.ok(turno);
+        return ResponseEntity.ok(service.mapToDTO(turno));
     }
+
+    // ============================
+    // GET TODOS (DTO)
+    // ============================
+    @RequirePermiso("ver_turnos")
+    @GetMapping
+    public ResponseEntity<?> obtenerTodos(){
+        return ResponseEntity.ok(service.obtenerTodos());
+    }
+
+    // ============================
+    // CREAR (DTO)
+    // ============================
     @RequirePermiso("crear_turno")
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody Turno turno){
+    public ResponseEntity<?> crear(@RequestBody TurnoCreateDTO turno){
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(service.crear(turno));
+                    .body(service.crear(turno)); // devuelve DTO
         }catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
         }
     }
+
+    // ============================
+    // ACTUALIZAR (DEVUELVE DTO)
+    // ============================
+    @RequirePermiso("editar_turno")
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Turno turno){
         Turno actualizado = service.actualizar(id, turno);
@@ -54,8 +77,13 @@ public class TurnoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Turno no encontrado");
         }
-        return ResponseEntity.ok(actualizado);
+        return ResponseEntity.ok(service.mapToDTO(actualizado));
     }
+
+    // ============================
+    // REACTIVAR
+    // ============================
+    @RequirePermiso("editar_turno")
     @PutMapping("/{id}/reactivar")
     public ResponseEntity<?> reactivar(@PathVariable Long id){
         try{
@@ -66,6 +94,11 @@ public class TurnoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    // ============================
+    // ELIMINAR
+    // ============================
+    @RequirePermiso("cancelar_turno")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id){
         if(!service.eliminar(id)){
@@ -74,6 +107,11 @@ public class TurnoController {
         }
         return ResponseEntity.ok("Turno eliminado");
     }
+
+    // ============================
+    // AGENDA DIARIA (DTO)
+    // ============================
+    @RequirePermiso("ver_turnos")
     @GetMapping("/profesional/{id}/dia/{fecha}")
     public ResponseEntity<?> obtenerAgendaDiaria(
             @PathVariable Long id,
@@ -83,33 +121,53 @@ public class TurnoController {
         if(turnos.isEmpty()){
             return ResponseEntity.ok("El profesional no tiene turnos para esta fecha");
         }
-        return ResponseEntity.ok(turnos);
+        return ResponseEntity.ok(service.mapToDTOList(turnos));
     }
+
+    // ============================
+    // TURNOS POR CLIENTE (DTO)
+    // ============================
+    @RequirePermiso("ver_turnos")
     @GetMapping("/cliente/{id}")
     public ResponseEntity<?> obtenerTurnosPorCliente(@PathVariable Long id){
         List<Turno> turnos = service.obtenerTurnosPorCliente(id);
         if(turnos.isEmpty()){
             return ResponseEntity.ok("El cliente no tiene turnos registrados");
         }
-        return ResponseEntity.ok(turnos);
+        return ResponseEntity.ok(service.mapToDTOList(turnos));
     }
+
+    // ============================
+    // FUTUROS (DTO)
+    // ============================
+    @RequirePermiso("ver_turnos")
     @GetMapping("/futuros")
     public ResponseEntity<?> obtenerTurnosFuturos(){
         List<Turno> turnos = service.obtenerTurnosFuturos();
         if(turnos.isEmpty()){
             return ResponseEntity.ok("No hay turnos futuros");
         }
-        return ResponseEntity.ok(turnos);
+        return ResponseEntity.ok(service.mapToDTOList(turnos));
     }
+
+    // ============================
+    // CANCELADOS (DTO)
+    // ============================
+    @RequirePermiso("ver_turnos")
     @GetMapping("/estado/{estado}")
     public ResponseEntity<?> obtenerTurnosCancelados(@PathVariable EstadoTurno estado){
         List<Turno> turnos = service.obtenerTurnosCancelados(estado);
         if(turnos.isEmpty()){
             return ResponseEntity.ok("No hay turnos con estado " + estado);
         }
-        return ResponseEntity.ok(turnos);
+        return ResponseEntity.ok(service.mapToDTOList(turnos));
     }
-    @GetMapping
+
+    // ============================
+    // BUSCADOR (DTO)
+    // ============================
+    @RequirePermiso("ver_turnos")
+    @GetMapping("/buscar")
     public ResponseEntity<?> buscarTurnos(
             @RequestParam(required = false) EstadoTurno estado,
             @RequestParam(required = false) Long profesionalId,
@@ -121,9 +179,11 @@ public class TurnoController {
     ){
         Pageable pageable = PageRequest.of(page, size);
         Page<Turno> turnos = service.buscarTurnos(estado,profesionalId, clienteId,desde,hasta, pageable);
+
         if(turnos.isEmpty()){
             return ResponseEntity.ok("No se encontraron turnos");
         }
-        return ResponseEntity.ok(turnos);
+
+        return ResponseEntity.ok(turnos.map(service::mapToDTO));
     }
 }

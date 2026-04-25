@@ -1,7 +1,7 @@
-package com.cursocopilot.turnos_app.service;
+package com.turnos_app.service;
 
-import com.cursocopilot.turnos_app.model.Especialidad;
-import com.cursocopilot.turnos_app.repository.EspecialidadRepository;
+import com.turnos_app.model.Especialidad;
+import com.turnos_app.repository.EspecialidadRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

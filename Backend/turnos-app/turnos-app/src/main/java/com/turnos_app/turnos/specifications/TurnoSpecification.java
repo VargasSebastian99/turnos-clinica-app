@@ -1,7 +1,7 @@
-package com.cursocopilot.turnos_app.turnos.specifications;
+package com.turnos_app.turnos.specifications;
 
-import com.cursocopilot.turnos_app.model.EstadoTurno;
-import com.cursocopilot.turnos_app.model.Turno;
+import com.turnos_app.model.EstadoTurno;
+import com.turnos_app.model.Turno;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;

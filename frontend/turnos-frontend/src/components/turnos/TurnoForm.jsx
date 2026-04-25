@@ -1,41 +1,33 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function TurnoForm({ initialValues, onSubmit, profesionales, clientes, servicios }) {
-  const [profesionalId, setProfesionalId] = useState("");
-  const [clienteId, setClienteId] = useState("");
-  const [servicioId, setServicioId] = useState("");
+  const [profesionalId, setProfesionalId] = useState(null);
+  const [clienteId, setClienteId] = useState(null);
+  const [servicioId, setServicioId] = useState(null);
   const [fecha, setFecha] = useState("");
   const [hora, setHora] = useState("");
-  const [estado, setEstado] = useState("PENDIENTE");
-const profesionalSeleccionado = profesionales.find(p => p.id === Number(profesionalId));
-const serviciosFiltrados = profesionalSeleccionado?.servicios ?? [];
 
-    useEffect(() => {
-      if(initialValues){
-        setProfesionalId(initialValues.profesional?.id ?? "");
-        setClienteId(initialValues.cliente?.id ?? "");
-        setServicioId(initialValues.servicio?.id ?? "");
-        setFecha(initialValues.fecha ?? "");
-        setHora(initialValues.hora ?? "");
-        setEstado(initialValues.estado ?? "PENDIENTE");
-      }
-}, []);
+ useEffect(() => {
+  if (initialValues) {
+    setProfesionalId(initialValues.profesionalId ?? null);
+    setClienteId(initialValues.clienteId ?? null);
+    setServicioId(initialValues.servicioId ?? null);
+    setFecha(initialValues.fecha ?? "");
+    setHora(initialValues.hora ?? "");
+  }
+}, [initialValues]);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-
-const handleSubmit = (e) => {
-  e.preventDefault();
-
-  const fechaHora = `${fecha}T${hora}:00`;
-
-  onSubmit({
-    profesional: { id: Number(profesionalId) },
-    cliente: { id: Number(clienteId) },
-    servicio: { id: Number(servicioId) },
-    fecha,
-    hora
-  });
-};
+    onSubmit({
+      clienteId: clienteId,
+      profesionalId: profesionalId,
+      servicioId: servicioId,
+      fecha,
+      hora
+    });
+  };
 
   return (
     <form id="turno-form" onSubmit={handleSubmit} className="space-y-4">
@@ -46,8 +38,8 @@ const handleSubmit = (e) => {
         <label className="block text-sm font-medium">Profesional</label>
         <select
           className="w-full border p-2 rounded"
-          value={profesionalId}
-          onChange={(e) => setProfesionalId(e.target.value)}
+          value={profesionalId ?? ""}
+          onChange={(e) => setProfesionalId(Number(e.target.value))}
           required
         >
           <option value="">Seleccione un profesional</option>
@@ -64,8 +56,8 @@ const handleSubmit = (e) => {
         <label className="block text-sm font-medium">Cliente</label>
         <select
           className="w-full border p-2 rounded"
-          value={clienteId}
-          onChange={(e) => setClienteId(e.target.value)}
+          value={clienteId ?? ""}
+          onChange={(e) => setClienteId(Number(e.target.value))}
           required
         >
           <option value="">Seleccione un cliente</option>
@@ -82,10 +74,9 @@ const handleSubmit = (e) => {
         <label className="block text-sm font-medium">Servicio</label>
         <select
           className="w-full border p-2 rounded"
-          value={servicioId}
-          onChange={(s) => setServicioId(s.target.value)}
+          value={servicioId ?? ""}
+          onChange={(e) => setServicioId(Number(e.target.value))}
           required
-          disabled={!profesionalId}
         >
           <option value="">Seleccione un servicio</option>
           {servicios.map((s) => (
@@ -118,22 +109,6 @@ const handleSubmit = (e) => {
           onChange={(e) => setHora(e.target.value)}
           required
         />
-      </div>
-
-      {/* Estado */}
-      <div>
-        <label className="block text-sm font-medium">Estado</label>
-        <select
-          className="w-full border p-2 rounded"
-          value={estado}
-          onChange={(e) => setEstado(e.target.value)}
-        >
-          <option value="PENDIENTE">Pendiente</option>
-          <option value="CONFIRMADO">Confirmado</option>
-          <option value="CANCELADO">Cancelado</option>
-          <option value="Ausente">Ausente</option>
-          <option value="ATENDIDO">Atendido</option>
-        </select>
       </div>
     </form>
   );

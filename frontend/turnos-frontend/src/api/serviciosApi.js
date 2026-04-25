@@ -1,46 +1,30 @@
-const API_URL = "http://localhost:8080/servicios";
+import axios from "axios";
+
+const API_URL = `${import.meta.env.VITE_API_URL}/servicios`;
+
 // listar todos
 export async function getServicios() {
-  const res = await fetch(API_URL);
-  return res.json();
+  const res = await axios.get(API_URL);
+  return res.data;
 }
 
 // obtener uno por ID
 export async function getServicioById(id) {
-  const res = await fetch(`${API_URL}/${id}`);
-  if (!res.ok) throw new Error("No se pudo obtener el servicio");
-  return res.json();
+  const res = await axios.get(`${API_URL}/${id}`);
+  return res.data;
 }
 //editar 
 export async function editarServicio(id, data) {
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || "Error desconocido");
-  }
-  return res.json();
+  const res = await axios.put(`${API_URL}/${id}`, data);
+  return res.data;
 }
 //crear
 export async function crearServicio(data) {
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  const res = await axios.post(API_URL, data);
+  return res.data;
 }
 //eliminar  
 export async function eliminarServicio(id) {
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || "Error desconocido");
-  }
-  return true;
-} 
+  const res = await axios.delete(`${API_URL}/${id}`);
+  return res.data;
+}

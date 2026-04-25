@@ -1,11 +1,9 @@
-package com.cursocopilot.turnos_app.model;
+package com.turnos_app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,7 +16,8 @@ import java.util.List;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "servicios")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Servicio {
@@ -32,8 +31,9 @@ public class Servicio {
     private int duracionMinutos;
     private boolean activo = true;
     private LocalDate fechaBaja;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "especialidad_id")
+    @JsonIgnore
     private Especialidad especialidad;
     @CreatedDate
     @Column(updatable = false)

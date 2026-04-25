@@ -1,24 +1,34 @@
 import EntityViewLayout from "../../layouts/EntityViewLayout";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { getTurnoById } from "../../api/turnosApi";
+import { hasPermission } from "../../utils/permissions";
 export default function TurnoView(){
     const { id } = useParams();
     const navigate = useNavigate();
     const [tab, setTab] = useState("info");
     const [turno, setTurno] = useState(null);
+    const {user, loading} = useAuth();
 
     useEffect(() => {
-        fetch(`http://localhost:8080/turnos/${id}`)
-            .then(response => response.json())
-            .then(setTurno);
-    }, [id]);
+        if (loading) return;
+        getTurnoById(id).then(setTurno);
+    }, [id, loading]);
+
+    if (loading) return <div>Cargando usuario...</div>;
     if (!turno) return <div>Cargando...</div>;
+
+    if (!hasPermission(user, "ver_turnos")) {
+        return <div>No tenés permisos para ver este turno</div>;
+    }
+
     return(
         <EntityViewLayout
-            title={`Turno #${turno.id} - ${turno.cliente.nombre} ${turno.cliente.apellido}`}
+            title={`Turno #${turno.id} - ${turno.clienteNombre}`}
             tabs={[
                 { id: "info", label: "Información" },
-                { id: "auditoria", label: "Auditoría"   }
+                { id: "auditoria", label: "Auditoría" }
             ]}
             activeTab={tab}
             onTabChange={setTab}
@@ -26,41 +36,40 @@ export default function TurnoView(){
         >
             {tab === "info" && (
                 <div className="space-y-4">
-                    {/*card 1*/}
                     <div className="bg-white shadow-md rounded-lg p-4">
                         <h2 className="text-lg font-semibold">Datos del Turno</h2>
                         <div className="border-b my-3"></div>
                         <p><strong>Fecha:</strong> {turno.fecha}</p>
                         <p><strong>Hora:</strong> {turno.hora}</p>
                     </div>
+
                     <div className="bg-white shadow-md rounded-lg p-4">
                         <h2 className="text-lg font-semibold">Datos del Cliente</h2>
                         <div className="border-b my-3"></div>
-                        <p><strong>Nombre:</strong> {turno.cliente.nombre}</p>
-                        <p><strong>Email:</strong> {turno.cliente.email}</p>
-                        <p><strong>Teléfono:</strong> {turno.cliente.telefono}</p>
+                        <p><strong>Nombre:</strong> {turno.clienteNombre}</p>
+                        <p><strong>Email:</strong> {turno.clienteEmail}</p>
+                        <p><strong>Teléfono:</strong> {turno.clienteTelefono}</p>
                     </div>
+
                     <div className="bg-white shadow-md rounded-lg p-4">
                         <h2 className="text-lg font-semibold">Datos del Profesional</h2>
                         <div className="border-b my-3"></div>
-                        <p><strong>Nombre:</strong> {turno.profesional.nombre}</p>
-                        
-                        
+                        <p><strong>Nombre:</strong> {turno.profesionalNombre}</p>
                     </div>
+
                     <div className="bg-white shadow-md rounded-lg p-4">
                         <h2 className="text-lg font-semibold">Datos del Servicio</h2>
                         <div className="border-b my-3"></div>
-                        <p><strong>Nombre:</strong> {turno.servicio.nombre}</p>
-                        <p><strong>Duración (minutos):</strong> {turno.servicio.duracionMinutos}</p>
+                        <p><strong>Nombre:</strong> {turno.servicioNombre}</p>
+                        <p><strong>Duración (minutos):</strong> {turno.duracion}</p>
                     </div>
                 </div>
-                
             )}
+
             {tab === "auditoria" && (
                 <div>
                     <h2>Auditoría del Turno</h2>
-                    <p>Historial de cambios para el turno # {turno.id}</p>
-                    {/* Agrega el historial de auditoría aquí */}
+                    <p>Historial de cambios para el turno #{turno.id}</p>
                 </div>
             )}
         </EntityViewLayout>

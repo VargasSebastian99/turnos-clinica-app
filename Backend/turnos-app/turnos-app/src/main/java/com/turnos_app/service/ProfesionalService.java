@@ -1,10 +1,11 @@
-package com.cursocopilot.turnos_app.service;
+package com.turnos_app.service;
 
-import com.cursocopilot.turnos_app.model.Especialidad;
-import com.cursocopilot.turnos_app.model.EstadoProfesional;
-import com.cursocopilot.turnos_app.model.Profesional;
-import com.cursocopilot.turnos_app.repository.EspecialidadRepository;
-import com.cursocopilot.turnos_app.repository.ProfesionalRepository;
+import com.turnos_app.dto.ProfesionalResponseDTO;
+import com.turnos_app.model.Especialidad;
+import com.turnos_app.model.EstadoProfesional;
+import com.turnos_app.model.Profesional;
+import com.turnos_app.repository.EspecialidadRepository;
+import com.turnos_app.repository.ProfesionalRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Service
 public class ProfesionalService {
+
     private final ProfesionalRepository repository;
     private final EspecialidadRepository especialidadRepository;
 
@@ -20,8 +22,32 @@ public class ProfesionalService {
         this.repository = repository;
         this.especialidadRepository = especialidadRepository;
     }
-    public List<Profesional> obtenerTodos(){
-        return repository.findAll();
+    public ProfesionalResponseDTO mapToDTO(Profesional p){
+        return new ProfesionalResponseDTO(
+                p.getId(),
+                p.getNombre(),
+                p.getEstado(),
+                p.getEspecialidad().getId(),
+                p.getEspecialidad().getNombre(),
+                p.getHoraInicioManiana(),
+                p.getHoraFinManiana(),
+                p.getHoraInicioTarde(),
+                p.getHoraFinTarde(),
+               true,
+               // p.getActivo(),
+                p.getFechaBaja(),
+                p.getFechaAlta(),
+                p.getFechaModificacion()
+        );
+    }
+    public List<ProfesionalResponseDTO> mapToDTOList(List<Profesional> profesionales){
+        return profesionales.stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+    public List<ProfesionalResponseDTO> obtenerTodos(){
+
+        return mapToDTOList(repository.findAll());
     }
     public Profesional obtenerPorId(Long id){
         return repository.findById(id).orElse(null);
