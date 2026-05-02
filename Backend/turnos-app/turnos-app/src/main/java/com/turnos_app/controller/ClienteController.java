@@ -3,6 +3,9 @@ package com.turnos_app.controller;
 import com.turnos_app.model.Cliente;
 import com.turnos_app.service.ClienteService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,8 +71,14 @@ public class ClienteController {
     }
     @RequirePermiso("ver_clientes")
     @GetMapping("/buscar")
-    public ResponseEntity<List<Cliente>> buscarPorNombre(@RequestParam String nombre){
-        return ResponseEntity.ok(service.buscarPorNombre(nombre));
+    public ResponseEntity<Page<Cliente>> buscarClientes(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String email,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(service.buscarClientes(nombre,email,pageable));
     }
     //verificar si un email existe
     @RequirePermiso("ver_clientes")

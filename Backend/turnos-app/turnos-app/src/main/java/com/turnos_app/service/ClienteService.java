@@ -3,6 +3,9 @@ package com.turnos_app.service;
 import com.turnos_app.model.Cliente;
 import com.turnos_app.repository.ClienteRepository;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -52,5 +55,17 @@ public class ClienteService {
     }
     public boolean existeEmail(String email){
         return repository.existsByEmail(email);
+    }
+    public Page<Cliente> buscarClientes(String nombre, String email, Pageable pageable){
+        Specification<Cliente> spec = Specification.where(null);
+        if(nombre != null && !nombre.isBlank()){
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("nombre")), "%" + nombre.toLowerCase() + "%"));
+        }
+        if(email != null && !email.isBlank()){
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
+        }
+        return repository.findAll(spec, pageable);
     }
 }

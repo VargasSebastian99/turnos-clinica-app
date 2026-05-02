@@ -1,6 +1,9 @@
 import axios from "axios";
-import { logout } from "../context/AuthContext";
+import { logout } from "../api/authService";
 
+const axiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_API_URL
+});
 axios.interceptors.response.use(
     response => response,
     error => {
@@ -14,3 +17,4 @@ axios.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+export default axios;

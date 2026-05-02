@@ -5,6 +5,9 @@ import com.turnos_app.model.Especialidad;
 import com.turnos_app.model.Servicio;
 import com.turnos_app.repository.ServicioRepository;
 import com.turnos_app.repository.EspecialidadRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -67,5 +70,21 @@ public class ServicioService {
         s.setFechaBaja(LocalDate.now());
         repository.save(s);
         return true;
+    }
+    public Page<Servicio> buscarServicios(
+            String nombre,
+            Long especialidadId,
+            Pageable pageable
+    ){
+        Specification<Servicio> spec = Specification.where(null);
+        if(nombre != null && nombre.isBlank()){
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("nombre")),"%" + nombre.toLowerCase() + "%"));
+        }
+        if(especialidadId != null){
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("especialidad").get("id"),especialidadId));
+        }
+        return repository.findAll(spec, pageable);
     }
 }

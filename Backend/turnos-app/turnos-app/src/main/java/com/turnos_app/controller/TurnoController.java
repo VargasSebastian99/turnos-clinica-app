@@ -179,11 +179,11 @@ public class TurnoController {
     ){
         Pageable pageable = PageRequest.of(page, size);
         Page<Turno> turnos = service.buscarTurnos(estado,profesionalId, clienteId,desde,hasta, pageable);
-
+        Page<TurnoResponseDTO> dtoPage = turnos.map(service::mapToDTO);
         if(turnos.isEmpty()){
-            return ResponseEntity.ok("No se encontraron turnos");
+            return ResponseEntity.ok(turnos.map(service::mapToDTO).getContent());
         }
 
-        return ResponseEntity.ok(turnos.map(service::mapToDTO));
+        return ResponseEntity.ok(dtoPage);
     }
 }

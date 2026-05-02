@@ -4,12 +4,18 @@ import com.turnos_app.dto.ServicioResponseDTO;
 import com.turnos_app.model.Servicio;
 import com.turnos_app.service.ServicioService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import com.turnos_app.security.annotations.RequirePermiso;
+
+
+
 @RestController
 @RequestMapping("/servicios")
 public class ServicioController {
@@ -56,5 +62,22 @@ public class ServicioController {
                     .body("Servicio no encontrado");
         }
         return ResponseEntity.ok("Servicio eliminado");
+    }
+    @RequirePermiso("ver_servicios")
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<ServicioResponseDTO>> buscarServicios(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) Long especialidadId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Servicio> servicios = service.buscarServicios(
+                nombre,
+                especialidadId,
+                pageable
+        );
+        Page<ServicioResponseDTO> dtoServicio = servicios.map(service::mapToDTO);
+        return ResponseEntity.ok(dtoServicio);
     }
 }

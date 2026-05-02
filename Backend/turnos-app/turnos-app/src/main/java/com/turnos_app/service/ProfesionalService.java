@@ -6,8 +6,11 @@ import com.turnos_app.model.EstadoProfesional;
 import com.turnos_app.model.Profesional;
 import com.turnos_app.repository.EspecialidadRepository;
 import com.turnos_app.repository.ProfesionalRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -81,5 +84,26 @@ public class ProfesionalService {
         p.setFechaBaja(LocalDate.now());
         repository.save(p);
         return true;
+    }
+    public Page<Profesional> buscarProfesionales(
+            String nombre,
+            Long especialidadId,
+            EstadoProfesional estado,
+            Pageable pageable
+    ){
+        Specification<Profesional> spec = Specification.where(null);
+        if(nombre != null && !nombre.isBlank()){
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("nombre")),"%" + nombre.toLowerCase() + "%"));
+        }
+        if(especialidadId != null){
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("especialidad").get("id"), especialidadId));
+        }
+        if(estado != null){
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("estado"), estado));
+        }
+        return repository.findAll(spec, pageable);
     }
 }

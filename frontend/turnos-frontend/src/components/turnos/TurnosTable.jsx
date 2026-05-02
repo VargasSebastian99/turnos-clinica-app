@@ -7,11 +7,12 @@ import { useAuth } from "../../hooks/useAuth";
 export default function TurnosTable({ turnos = [] }) {
   const {user, loading} = useAuth();
   const navigate = useNavigate();
+  const lista = Array.isArray(turnos) ? turnos : [];
   
   const handleEliminar = (id) => {
     alert("Eliminar Turno " + id);
   }
-  console.log("TURNOS EN COMPONENTE:", turnos);
+
   return (
     <div className="mt-6 bg-white shadow rounded-lg p-4">
       <h2 className="text-xl font-semibold mb-4">Listado de turnos</h2>
@@ -37,7 +38,7 @@ export default function TurnosTable({ turnos = [] }) {
               </td>
             </tr>
           ) : (
-            turnos.map((t) => (
+            lista.map((t) => (
               <tr key={t.id}>
                 <td className="p-2 border text-center justify-center py-2">
                     <div className="flex gap-2 justify-center">

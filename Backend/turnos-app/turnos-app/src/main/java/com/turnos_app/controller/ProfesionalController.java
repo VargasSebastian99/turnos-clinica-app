@@ -1,9 +1,14 @@
 package com.turnos_app.controller;
 
+import com.turnos_app.dto.ProfesionalResponseDTO;
+import com.turnos_app.model.EstadoProfesional;
 import com.turnos_app.model.Profesional;
 import com.turnos_app.service.ProfesionalService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -58,5 +63,24 @@ public class ProfesionalController {
                     .body("Profesional no encontrado");
         }
         return ResponseEntity.ok("Profesional eliminado");
+    }
+    @RequirePermiso("ver_profesionales")
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<ProfesionalResponseDTO>> buscarProfesionales(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) Long especialidadId,
+            @RequestParam(required = false)EstadoProfesional estado,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+            ){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Profesional> profesionales = service.buscarProfesionales(
+                nombre,
+                especialidadId,
+                estado,
+                pageable
+        );
+        Page<ProfesionalResponseDTO> dtoPage = profesionales.map(service::mapToDTO);
+        return ResponseEntity.ok(dtoPage);
     }
 }
