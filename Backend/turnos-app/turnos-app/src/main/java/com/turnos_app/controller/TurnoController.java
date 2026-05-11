@@ -35,10 +35,6 @@ public class TurnoController {
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id){
         Turno turno = service.obtenerPorId(id);
-        if(turno == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Turno no encontrado");
-        }
         return ResponseEntity.ok(service.mapToDTO(turno));
     }
 
@@ -73,10 +69,6 @@ public class TurnoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Turno turno){
         Turno actualizado = service.actualizar(id, turno);
-        if (actualizado == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Turno no encontrado");
-        }
         return ResponseEntity.ok(service.mapToDTO(actualizado));
     }
 

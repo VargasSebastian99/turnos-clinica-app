@@ -25,10 +25,6 @@ public class EspecialidadController {
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id){
         Especialidad esp = service.obtenerPorId(id);
-        if(esp == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Especialidad no encontrada");
-        }
         return ResponseEntity.ok(esp);
     }
     @RequirePermiso("crear_especialidad")
@@ -41,19 +37,12 @@ public class EspecialidadController {
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody Especialidad especialidad){
         Especialidad actualizada = service.actualizar(id, especialidad);
-        if(actualizada == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Especialidad no encontrada");
-        }
         return ResponseEntity.ok(actualizada);
     }
     @RequirePermiso("eliminar_especialidad")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id){
-        if(!service.eliminar(id)){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Especialidad no encontrada");
-        }
+        service.eliminar(id);
         return ResponseEntity.ok("Especialidad eliminada");
     }
 }

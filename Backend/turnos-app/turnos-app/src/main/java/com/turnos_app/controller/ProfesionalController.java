@@ -33,10 +33,6 @@ public class ProfesionalController {
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id){
         Profesional profesional = service.obtenerPorId(id);
-        if(profesional == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Profesional no encontrado");
-        }
         return ResponseEntity.ok(service.mapToDTO(profesional));
     }
     @RequirePermiso("crear_profesional")
@@ -49,19 +45,12 @@ public class ProfesionalController {
     @PutMapping("{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody Profesional profesional){
         Profesional actualizado = service.actualizar(id, profesional);
-        if(actualizado == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Profesional no encontrado");
-        }
         return ResponseEntity.ok(actualizado);
     }
     @RequirePermiso("eliminar_profesional")
     @DeleteMapping("{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id){
-        if(!service.eliminar(id)){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Profesional no encontrado");
-        }
+        service.eliminar(id);
         return ResponseEntity.ok("Profesional eliminado");
     }
     @RequirePermiso("ver_profesionales")

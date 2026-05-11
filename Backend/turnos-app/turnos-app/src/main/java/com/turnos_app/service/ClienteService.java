@@ -26,26 +26,30 @@ public class ClienteService {
         return repository.findAll();
     }
     public Cliente obtenerPorId(Long id){
-        return repository.findById(id).orElse(null);
+
+        return repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
     }
     public Cliente crear(Cliente cliente){
         return repository.save(cliente);
     }
     public Cliente actualizar(Long id, Cliente datos) {
-        Cliente existente = obtenerPorId(id);
-        if (existente == null) return null;
+        Cliente existente = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
         existente.setNombre(datos.getNombre());
         existente.setEmail(datos.getEmail());
         existente.setTelefono(datos.getTelefono());
         return repository.save(existente);
     }
-    public boolean eliminar(Long id){
-        Cliente c = obtenerPorId(id);
-        if (c == null) return false;
-        c.setActivo(false);
-        c.setFechaBaja(LocalDate.now());
-        repository.save(c);
-        return true;
+    public void eliminar(Long id){
+        if(!repository.existsById(id)){
+            throw new IllegalArgumentException("Cliente no encontrado");
+        }else {
+            Cliente c = obtenerPorId(id);
+            c.setActivo(false);
+            c.setFechaBaja(LocalDate.now());
+            repository.save(c);
+
+        }
     }
     public Optional<Cliente> buscarPorEmail(String email){
         return repository.findByEmail(email);

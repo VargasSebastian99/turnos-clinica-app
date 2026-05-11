@@ -29,10 +29,6 @@ public class ClienteController {
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id){
         Cliente cliente = service.obtenerPorId(id);
-        if (cliente == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Cliente no encontrado");
-        }
         return ResponseEntity.ok(cliente);
     }
     @RequirePermiso("crear_cliente")
@@ -45,20 +41,12 @@ public class ClienteController {
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id,@Valid @RequestBody Cliente cliente){
         Cliente actualizado = service.actualizar(id, cliente);
-        if(actualizado == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("cliente no encontrado");
-        }
         return ResponseEntity.ok(actualizado);
     }
     @RequirePermiso("eliminar_cliente")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id){
-        boolean eliminado = service.eliminar(id);
-        if(!eliminado){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Cliente no encontrado");
-        }
+        service.eliminar(id);
         return ResponseEntity.ok("Cliente eliminado");
     }
     @RequirePermiso("ver_clientes")

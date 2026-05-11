@@ -26,7 +26,7 @@ public class PermisoAspect {
                 .map(a -> a.getAuthority())
                 .toList();
         if (!permisosUsuario.contains(permisoRequerido)){
-            throw new ForbiddenException("No tenés permiso: " + permisoRequerido);
+            throw new ForbiddenException("No tenés permiso para realizar esta acción" );
         }
     }
 }

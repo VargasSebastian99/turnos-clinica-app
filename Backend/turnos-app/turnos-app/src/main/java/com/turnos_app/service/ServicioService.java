@@ -46,7 +46,8 @@ public class ServicioService {
         return mapToDTOList(repository.findAll());
     }
     public Servicio obtenerPorId(Long id){
-        return repository.findById(id).orElse(null);
+        return repository.findById(id)
+                .orElseThrow(()-> new IllegalArgumentException("Servicio no encontrado"));
     }
     public Servicio crear(Servicio servicio){
         return repository.save(servicio);

@@ -53,7 +53,8 @@ public class ProfesionalService {
         return mapToDTOList(repository.findAll());
     }
     public Profesional obtenerPorId(Long id){
-        return repository.findById(id).orElse(null);
+        return repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Profesional no encontrado"));
     }
     public Profesional crear(Profesional profesional){
         if (profesional.getEspecialidad() != null){

@@ -51,7 +51,8 @@ public class TurnoService {
         return mapToDTOList(repository.findAllConRelaciones());
     }
     public Turno obtenerPorId(Long id){
-        return repository.findById(id).orElse(null);
+        return repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Turno no encontrado"));
     }
     public TurnoResponseDTO crear(TurnoCreateDTO dto){
         Cliente cliente = clienteRepository.findById(dto.clienteId())

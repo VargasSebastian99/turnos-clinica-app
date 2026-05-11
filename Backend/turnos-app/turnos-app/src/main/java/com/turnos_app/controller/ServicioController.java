@@ -32,10 +32,6 @@ public class ServicioController {
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id){
         Servicio servicio = service.obtenerPorId(id);
-        if(servicio == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Servicio no encontrado");
-        }
         return ResponseEntity.ok(service.mapToDTO(servicio));
     }
     @RequirePermiso("crear_servicio")
@@ -48,10 +44,6 @@ public class ServicioController {
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @Valid @RequestBody Servicio servicio){
         Servicio actualizado = service.actualizar(id, servicio);
-        if(actualizado == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Servicio no encontrado");
-        }
         return ResponseEntity.ok(actualizado);
     }
     @RequirePermiso("eliminar_servicio")
